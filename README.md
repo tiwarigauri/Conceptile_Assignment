@@ -129,36 +129,3 @@ Thank you for reviewing this assignment! This guide will walk you through settin
 
 ## Need Help?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-public static PublicKey loadPublicKey(String filepath) throws Exception {
-        // Read all lines of the PEM file
-        String keyPem = new String(Files.readAllBytes(Paths.get(filepath)))
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s", ""); // Remove any line breaks or whitespace
-
-        // Decode Base64 content
-        byte[] decoded = Base64.getDecoder().decode(keyPem);
-
-        // Create KeySpec
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
-
-        // Use EC (Elliptic Curve) key factory
-        KeyFactory keyFactory = KeyFactory.getInstance("EC");
-
-        // Generate and return the public key
-        return keyFactory.generatePublic(keySpec);
-    }
-}
