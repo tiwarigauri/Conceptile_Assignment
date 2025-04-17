@@ -142,16 +142,23 @@ Thank you for reviewing this assignment! This guide will walk you through settin
 
 
 
-log.info("Key ID: {}", decodedJWT.getKeyId());
-log.info("Token Type: {}", decodedJWT.getType());
-log.info("Algorithm: {}", decodedJWT.getAlgorithm());
+public static PublicKey loadPublicKey(String filepath) throws Exception {
+        // Read all lines of the PEM file
+        String keyPem = new String(Files.readAllBytes(Paths.get(filepath)))
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s", ""); // Remove any line breaks or whitespace
 
-log.info("Issuer: {}", decodedJWT.getClaim("iss").asString());
-log.info("Audience: {}", decodedJWT.getClaim("aud").asString());
-log.info("Subject: {}", decodedJWT.getClaim("sub").asString());
-log.info("Issued At: {}", decodedJWT.getClaim("iat").asDate());
-log.info("Not Before: {}", decodedJWT.getClaim("nbf").asDate());
-log.info("Expiration: {}", decodedJWT.getClaim("exp").asDate());
-log.info("Name: {}", decodedJWT.getClaim("name").asString());
-log.info("Email: {}", decodedJWT.getClaim("email").asString());
-log.info("JWT ID: {}", decodedJWT.getClaim("jti").asString());
+        // Decode Base64 content
+        byte[] decoded = Base64.getDecoder().decode(keyPem);
+
+        // Create KeySpec
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
+
+        // Use EC (Elliptic Curve) key factory
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+
+        // Generate and return the public key
+        return keyFactory.generatePublic(keySpec);
+    }
+}
