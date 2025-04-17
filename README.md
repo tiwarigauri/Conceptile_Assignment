@@ -142,81 +142,16 @@ Thank you for reviewing this assignment! This guide will walk you through settin
 
 
 
+log.info("Key ID: {}", decodedJWT.getKeyId());
+log.info("Token Type: {}", decodedJWT.getType());
+log.info("Algorithm: {}", decodedJWT.getAlgorithm());
 
-
-
-
-String token = MoodysURL.split("token=")[1].split("&")[0];
-PublicKey publicKey = loadPublicKeyFromJKS("src/test/resources/your-key.jks", "yourAlias", "yourPassword");
-
-try {
-    // 1. Signature validation
-    JwtUtils.verifyJwtToken(token, publicKey);
-
-    // 2. Decode token
-    DecodedJWT decodedJWT = JwtUtils.decodedJwtToken(token);
-
-    // 3. Expiry validation
-    if (JwtUtils.isTokenExpired(token)) {
-        Hooks.scenario.log("Token is expired");
-    }
-
-    // 4. iat validation
-    Date iat = decodedJWT.getIssuedAt();
-    if (iat == null) {
-        Hooks.scenario.log("iat claim is missing or invalid");
-    }
-
-    // 5. nbf within 30s before iat
-    Date nbf = decodedJWT.getNotBefore();
-    if (nbf != null && iat != null) {
-        long secondsDiff = (iat.getTime() - nbf.getTime()) / 1000;
-        if (secondsDiff < 0 || secondsDiff > 30) {
-            Hooks.scenario.log("nbf is not within 30s before iat");
-        }
-    }
-
-    // 6. exp 30-120s after iat
-    Date exp = decodedJWT.getExpiresAt();
-    if (exp != null && iat != null) {
-        long secondsDiff = (exp.getTime() - iat.getTime()) / 1000;
-        if (secondsDiff < 30 || secondsDiff > 120) {
-            Hooks.scenario.log("exp is not 30-120s after iat");
-        }
-    }
-
-    // 7. iss validation
-    String iss = decodedJWT.getIssuer();
-    if (!"expectedIssuer".equals(iss)) {
-        Hooks.scenario.log("Invalid iss claim");
-    }
-
-    // 8. aud validation
-    String aud = decodedJWT.getAudience().get(0);
-    if (!"expectedAudience".equals(aud)) {
-        Hooks.scenario.log("Invalid aud claim");
-    }
-
-    // 9. sub validation
-    if (decodedJWT.getSubject() == null || decodedJWT.getSubject().isEmpty()) {
-        Hooks.scenario.log("Invalid sub claim");
-    }
-
-    // 10. name/email/jti validation (optional claims)
-    String name = decodedJWT.getClaim("name").asString();
-    String email = decodedJWT.getClaim("email").asString();
-    String jti = decodedJWT.getClaim("jti").asString();
-
-    if (name != null && name.trim().isEmpty()) Hooks.scenario.log("Empty name");
-    if (email != null && email.trim().isEmpty()) Hooks.scenario.log("Empty email");
-    if (jti != null && jti.trim().isEmpty()) Hooks.scenario.log("Empty jti");
-
-    // 11. Header validations
-    if (!"JWT".equals(decodedJWT.getType())) Hooks.scenario.log("Invalid typ");
-    if (!"ES256".equals(decodedJWT.getAlgorithm())) Hooks.scenario.log("Invalid alg");
-    if (decodedJWT.getKeyId() == null) Hooks.scenario.log("Missing kid");
-
-} catch (Exception e) {
-    Hooks.scenario.log("JWT validation failed: " + e.getMessage());
-    e.printStackTrace();
-}
+log.info("Issuer: {}", decodedJWT.getClaim("iss").asString());
+log.info("Audience: {}", decodedJWT.getClaim("aud").asString());
+log.info("Subject: {}", decodedJWT.getClaim("sub").asString());
+log.info("Issued At: {}", decodedJWT.getClaim("iat").asDate());
+log.info("Not Before: {}", decodedJWT.getClaim("nbf").asDate());
+log.info("Expiration: {}", decodedJWT.getClaim("exp").asDate());
+log.info("Name: {}", decodedJWT.getClaim("name").asString());
+log.info("Email: {}", decodedJWT.getClaim("email").asString());
+log.info("JWT ID: {}", decodedJWT.getClaim("jti").asString());
