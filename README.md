@@ -129,3 +129,42 @@ Thank you for reviewing this assignment! This guide will walk you through settin
 
 ## Need Help?
 
+
+
+
+
+
+
+
+
+
+
+
+String sub = decodedJWT.getClaim("sub").asString();
+
+// Check if 'sub' is not null or empty
+if (sub == null || sub.isEmpty()) {
+    System.out.println("'sub' claim is missing or empty.");
+}
+
+// Check if length is 8
+else if (sub.length() != 8) {
+    System.out.println("'sub' claim should be exactly 8 characters long.");
+}
+
+// Check if all characters are normal text (ASCII)
+else {
+    boolean isAscii = true;
+    for (char ch : sub.toCharArray()) {
+        if (ch < 32 || ch > 126) {
+            isAscii = false;
+            break;
+        }
+    }
+
+    if (!isAscii) {
+        System.out.println("'sub' claim has non-ASCII characters.");
+    } else {
+        System.out.println("'sub' claim is valid.");
+    }
+}
